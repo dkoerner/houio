@@ -10,6 +10,10 @@
 #include "Vec3Algo.h"
 #include <cassert>
 
+namespace houio
+{
+
+
 namespace math
 {
 	template <typename T>
@@ -546,3 +550,4 @@ namespace math
 	}
 }
 
+} // namespace houio

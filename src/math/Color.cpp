@@ -6,6 +6,8 @@
 #include <houio/math/Color.h>
 #include <houio/math/Math.h>
 
+namespace houio
+{
 
 namespace math
 {
@@ -253,3 +255,5 @@ namespace math
 		return Color( r/255.0f, g/255.0f, b/255.0f, a/255.0f );
 	}
 }
+
+} // namespace houio

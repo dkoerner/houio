@@ -8,6 +8,10 @@
 #include "Matrix22.h"
 #include "Vec2.h"
 
+namespace houio
+{
+
+
 namespace math
 {
 
@@ -139,3 +143,5 @@ namespace math
 
 }
 
+
+} // namespace houio

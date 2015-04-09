@@ -7,6 +7,10 @@
 
 #include "Vec3.h"
 
+namespace houio
+{
+
+
 namespace math
 {
 	//
@@ -372,3 +376,5 @@ namespace math
 	typedef Matrix33<double> Matrix33d;
 	typedef Matrix33<double> M33d;
 }
+
+} // namespace houio

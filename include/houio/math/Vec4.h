@@ -5,6 +5,8 @@ simple vector class
 ----------------------------------------------------------------------*/
 #pragma once
 
+namespace houio
+{
 
 
 namespace math
@@ -278,3 +280,5 @@ namespace math
 	typedef Vec4<int> V4i;
 
 }
+
+} // namespace houio

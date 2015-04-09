@@ -9,6 +9,10 @@
 #define MATH_RNG_UPPER_MASK 0x80000000UL /* most significant w-r bits */
 #define MATH_RNG_LOWER_MASK 0x7fffffffUL /* least significant r bits */
 
+namespace houio
+{
+
+
 namespace math
 {
 
@@ -170,3 +174,5 @@ namespace math
 
 
 }
+
+} // namespace houio

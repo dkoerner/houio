@@ -5,7 +5,8 @@
 ----------------------------------------------------------------------*/
 #include <houio/math/Math.h>
 
-
+namespace houio
+{
 
 
 namespace math
@@ -503,3 +504,5 @@ namespace math
 		for( int i=0; i < dim; i++ ) v[i] = (1.0f - h)*keyPos[(kn)*dim+i] + h*keyPos[k*dim+i];
 	}
 }
+
+} // namespace houio

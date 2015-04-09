@@ -9,6 +9,10 @@
 
 #include "Vec3.h"
 
+namespace houio
+{
+
+
 namespace math
 {
 	/// \brief matrix class which is specialized in the usage as transform matrix
@@ -860,3 +864,5 @@ namespace math
 	typedef Matrix44<double> M44d;
 
 }
+
+} // namespace houio

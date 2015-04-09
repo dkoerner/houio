@@ -9,6 +9,8 @@ axis aligned bounding boxes
 #include "Vec3.h"
 #include <limits>
 
+namespace houio
+{
 
 namespace math
 {
@@ -198,3 +200,5 @@ namespace math
 	typedef BoundingBox3<double> Box3d;
 
 }
+
+} // namespace houio

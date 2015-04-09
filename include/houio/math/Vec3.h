@@ -6,6 +6,9 @@ simple vector class
 #pragma once
 #include <iostream>
 
+namespace houio
+{
+
 
 namespace math
 {
@@ -283,3 +286,5 @@ namespace math
 	typedef Vec3<double> V3d;
 	typedef Vec3<int> V3i;
 }
+
+} // namespace houio

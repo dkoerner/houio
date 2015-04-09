@@ -5,6 +5,8 @@
 ----------------------------------------------------------------------*/
 #pragma once
 
+namespace houio
+{
 
 
 namespace math
@@ -60,3 +62,5 @@ namespace math
 		};
 	};
 }
+
+} // namespace houio

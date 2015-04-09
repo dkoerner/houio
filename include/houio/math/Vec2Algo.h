@@ -8,6 +8,9 @@
 #include "Vec2.h"
 #include "Vec2Algo.h"
 
+namespace houio
+{
+
 
 namespace math
 {
@@ -64,3 +67,5 @@ namespace math
 
 
 }
+
+} // namespace houio

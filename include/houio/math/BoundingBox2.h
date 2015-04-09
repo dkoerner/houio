@@ -7,7 +7,8 @@ axis aligned bounding boxes in 2d
 #pragma once
 #include "Math.h"
 
-
+namespace houio
+{
 
 namespace math
 {
@@ -106,3 +107,5 @@ namespace math
 			return false;
 	}
 }
+
+} // namespace houio

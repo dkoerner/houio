@@ -13,6 +13,8 @@
 #include <cassert>
 
 
+namespace houio
+{
 
 namespace math
 {
@@ -201,3 +203,5 @@ namespace math
 	typedef Ray3<float> Ray3f;
 	typedef Ray3<double> Ray3d;
 }
+
+} // namespace houio

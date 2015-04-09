@@ -8,6 +8,10 @@ Vec3 related routines
 #include <math.h>
 #include "Vec3.h"
 
+namespace houio
+{
+
+
 namespace math
 {
 
@@ -223,3 +227,5 @@ namespace math
 		*v3 = math::cross(v1, *v2);
 	}
 }
+
+} // namespace houio

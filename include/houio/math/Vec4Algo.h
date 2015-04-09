@@ -8,6 +8,10 @@ Vec4 related routines
 #include <math.h>
 #include "Vec4.h"
 
+namespace houio
+{
+
+
 namespace math
 {
 
@@ -189,3 +193,5 @@ namespace math
 	}
 
 }
+
+} // namespace houio

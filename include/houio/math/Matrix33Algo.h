@@ -2,6 +2,9 @@
 
 #include "Matrix33.h"
 
+namespace houio
+{
+
 
 namespace math
 {
@@ -219,3 +222,5 @@ namespace math
 	}
 
 }
+
+} // namespace houio

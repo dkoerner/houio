@@ -36,6 +36,10 @@
 #include "BoundingBox2.h"
 #include "RNG.h"
 
+namespace houio
+{
+
+
 ///
 /// \brief vectors matrices and mathematical operations
 ///
@@ -359,3 +363,5 @@ namespace math
 	}
 
 }
+
+} // namespace houio
