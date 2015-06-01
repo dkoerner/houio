@@ -7,16 +7,16 @@ namespace houio
 {
 	struct HouGeoIO
 	{
-		static void                             exportGeo( const std::string &path, Geometry::Ptr geo );
 		static HouGeo::Ptr                      import( std::istream *in );
-		static Geometry::Ptr              importGeometry( const std::string &path );
+		static Geometry::Ptr                    importGeometry( const std::string &path );
 		static ScalarField::Ptr                 importVolume(const std::string &path);
-		static bool                             xport(std::ostream *out, HouGeoAdapter::Ptr geo , bool binary = true);
 		static void                             makeLog( const std::string &path, std::ostream *out );
 
-		static Geometry::Ptr              convertToGeometry( HouGeo::Ptr houGeo, int prim ); // converts primitive with the given index to geometry
+		static Geometry::Ptr                    convertToGeometry( HouGeo::Ptr houGeo, int prim ); // converts primitive with the given index to geometry
 
+		static void                             xport( const std::string &path, Geometry::Ptr geo );
 		static bool                             xport( const std::string& filename, ScalarField::Ptr volume ); // convinience funcion for quickly saving volume to bgeo
+		static bool                             xport(std::ostream *out, HouGeoAdapter::Ptr geo , bool binary = true);
 
 
 	private:

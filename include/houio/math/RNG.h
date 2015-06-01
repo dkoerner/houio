@@ -84,7 +84,7 @@ namespace math
 		}
 
 		/// use the parethesis operator to get a new random value
-		inline float RNG::operator()()
+		inline float operator()()
 		{
 			// same as randomFloat
 			float v = (randomUInt() & 0xffffff) / float(1 << 24);
