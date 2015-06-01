@@ -301,6 +301,41 @@ namespace houio
 	}
 
 
+	// convertes geometry to hougeo and exports it
+	void HouGeoIO::xport( const std::string &path, Geometry::Ptr geo )
+	{
+		HouGeo::Ptr hgeo = std::make_shared<HouGeo>();
+
+		// convert geometry to HouGeo ---
+		std::vector<std::string> attrNames;
+		geo->getAttrNames(attrNames);
+		for( auto& attrName:attrNames )
+		{
+			houio::Attribute::Ptr attr = geo->getAttr(attrName);
+
+			// some attributes need special treatment, such as P which has to be V4f
+			if( attrName == "P" && (attr->numComponents()!=4) )
+			{
+				houio::Attribute::Ptr pattr = attr;
+				int numPoints = pattr->numElements();
+				attr = houio::Attribute::createV4f(pattr->numElements());
+				for( int i=0;i<numPoints;++i )
+				{
+					math::V3f p = pattr->get<math::V3f>(i);
+					attr->set<math::V4f>(i,math::V4f(p.x, p.y, p.z, 1.0f));
+				}
+			}
+
+			HouGeo::HouAttribute::Ptr hattr = std::make_shared<HouGeo::HouAttribute>( attrName, attr );
+			hgeo->setPointAttribute( hattr );
+		}
+
+		// export HouGeo---
+		std::ofstream out( path.c_str(), std::ios_base::out | std::ios_base::binary );
+		xport( &out, hgeo );
+	}
+
+
 	// convinience funcion for quickly saving volume to bgeo
 	bool HouGeoIO::xport( const std::string& filename, ScalarField::Ptr volume )
 	{

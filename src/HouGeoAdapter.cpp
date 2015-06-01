@@ -1,5 +1,5 @@
-#include <houio/houGeoIO.h>
-#include <houio/houGeo.h>
+#include <houio/HouGeoIO.h>
+#include <houio/HouGeo.h>
 
 #include <fstream>
 

@@ -30,6 +30,8 @@ typedef uint64_t   uint64;
 typedef int64_t    sint64;
 typedef uint32_t   uint32;
 typedef int32_t    sint32;
+typedef uint16_t   uint16;
+typedef int16_t    sint16;
 typedef float      real32;
 typedef double     real64;
 

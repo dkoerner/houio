@@ -2,6 +2,7 @@
 
 #include <houio/json.h>
 #include <algorithm>
+#include <cstring>
 
 
 
@@ -557,10 +558,8 @@ namespace houio
 					{
 						throw std::runtime_error( "error " );
 					}else
-					{
 						result.push_back('\\');
 						result.push_back(c);
-					}
 				}else
 				if( c == '"' )
 				{
@@ -1031,7 +1030,7 @@ namespace houio
 			return m_isUniform;
 		}
 
-		void Array::append( Value &value )
+		void Array::append( const Value &value )
 		{
 			m_values.push_back( value );
 		}
@@ -1149,7 +1148,7 @@ namespace houio
 			return m_values.size();
 		}
 
-		void Object::append( const std::string &key, Value &value )
+		void Object::append( const std::string &key, const Value &value )
 		{
 			m_values.insert( std::make_pair(key, value) );
 		}

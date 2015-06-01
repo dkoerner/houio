@@ -2,7 +2,7 @@
 #include <houio/types.h>
 
 #include <iostream>
-
+#include <cstring>
 
 
 

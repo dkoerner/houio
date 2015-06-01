@@ -45,7 +45,7 @@
 //---------------------------------------------------------------------------
 
 #include <assert.h>
-#include "half.h"
+#include <houio/math/Half/half.h>
 
 using namespace std;
 
@@ -54,9 +54,9 @@ using namespace std;
 //-------------------------------------------------------------
 
 HALF_EXPORT_CONST half::uif half::_toFloat[1 << 16] =
-#include "toFloat.h"
+#include <houio/math/Half/toFloat.h>
 HALF_EXPORT_CONST unsigned short half::_eLut[1 << 9] =
-#include "eLut.h"
+#include <houio/math/Half/eLut.h>
 
 
 //-----------------------------------------------
@@ -72,7 +72,7 @@ half::overflow ()
 
     for (int i = 0; i < 10; i++)	
 	f *= f;				// this will overflow before
-					// the for­loop terminates
+					// the forï¿½loop terminates
     return f;
 }
 

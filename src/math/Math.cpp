@@ -416,7 +416,7 @@ namespace math
 		 Vec3f RelativeVec = v1 - v0*dot;
 		 RelativeVec.normalize();
 		 // The final result.
-		 return ((v0*cos(theta)) + (RelativeVec*sin(theta)));
+		 return ((v0*std::cos(theta)) + (RelativeVec*std::sin(theta)));
 	}
 
 	float clamp( float x, float left, float right )

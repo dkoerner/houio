@@ -1,6 +1,7 @@
 #include <houio/Geometry.h>
 #include <houio/math/Math.h>
 #include <iostream>
+#include <cstring>
 
 
 //#include <util/tuple.h>
@@ -43,6 +44,16 @@ namespace houio
 	{
 		std::map<std::string, Attribute::Ptr>::iterator it = m_attributes.find(name);
 		return(it != m_attributes.end());
+	}
+
+	void Geometry::getAttrNames( std::vector<std::string>& attrNames )const
+	{
+		attrNames.clear();
+		for( const auto& it : m_attributes )
+		{
+			std::string name = it.first;
+			attrNames.push_back(name);
+		}
 	}
 
 	void Geometry::removeAttr( const std::string &name )
