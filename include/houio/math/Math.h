@@ -6,6 +6,7 @@
 #pragma once
 
 #include <math.h>
+#include <cmath>
 
 #define MATH_PIf 3.14159265f
 #define MATH_PI 3.14159265
