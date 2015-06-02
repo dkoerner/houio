@@ -45,6 +45,7 @@ namespace houio
 ///
 namespace math
 {
+/*
 	inline int isnan( float f )
 	{
 		#if defined(_WINDOWS)
@@ -62,7 +63,7 @@ namespace math
 		return isinf(f);
 		#endif
 	}
-
+*/
 	inline float radToDeg( float rad )
 	{
 		return (float) ( (rad * 180.0f) / MATH_PIf );
