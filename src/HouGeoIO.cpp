@@ -310,6 +310,42 @@ namespace houio
 		return HouGeoIO::xport( &out, houGeo );
 	}
 
+	bool HouGeoIO::xport(const std::string &filename, Geometry::Ptr geo)
+	{
+		std::ofstream out( filename.c_str(), std::ios_base::out | std::ios_base::binary );
+		HouGeo::Ptr houGeo = std::make_shared<HouGeo>();
+
+
+		// contruct point attributes  ---
+		std::vector<std::string> pointAttributeNames;
+		geo->getAttrNames(pointAttributeNames);
+		for( auto name : pointAttributeNames )
+		{
+			Attribute::Ptr attr = geo->getAttr(name);
+
+			// some attributes need special treatment
+			if( name == "P" && attr->numComponents() == 3 )
+			{
+				// promote P attribute from v3f to v4f
+				Attribute::Ptr attr_new = std::make_shared<Attribute>( 4, Attribute::FLOAT);
+				int numElements = attr->numElements();
+				for( int i=0;i<numElements;++i )
+				{
+					math::V3f p = attr->get<math::V3f>(i);
+					attr_new->appendElement<math::V4f>( math::V4f(p.x, p.y, p.z, 1.0) );
+				}
+				attr = attr_new;
+			}
+
+			std::cout << "adding " << name << std::endl;
+			HouGeo::HouAttribute::Ptr hattr = std::make_shared<HouGeo::HouAttribute>( name, attr );
+			houGeo->setPointAttribute( hattr );
+		}
+
+
+		return HouGeoIO::xport( &out, houGeo );
+	}
+
 
 
 

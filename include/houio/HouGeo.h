@@ -103,14 +103,14 @@ namespace houio
 		virtual sint64                                       vertexcount()const;
 		virtual sint64                                       primitivecount()const;
 		virtual void                                         getPointAttributeNames( std::vector<std::string> &names )const;
-		virtual AttributeAdapter::Ptr                               getPointAttribute( const std::string &name );
+		virtual AttributeAdapter::Ptr                        getPointAttribute( const std::string &name );
 		virtual void                                         getVertexAttributeNames( std::vector<std::string> &names )const;
-		virtual AttributeAdapter::Ptr                               getVertexAttribute( const std::string &name );
+		virtual AttributeAdapter::Ptr                        getVertexAttribute( const std::string &name );
 		virtual bool                                         hasPrimitiveAttribute( const std::string &name )const;
 		virtual void                                         getPrimitiveAttributeNames( std::vector<std::string> &names )const;
-		virtual AttributeAdapter::Ptr                               getPrimitiveAttribute( const std::string &name );
+		virtual AttributeAdapter::Ptr                        getPrimitiveAttribute( const std::string &name );
 		virtual void                                         getGlobalAttributeNames( std::vector<std::string> &names )const;
-		virtual AttributeAdapter::Ptr                               getGlobalAttribute( const std::string &name );
+		virtual AttributeAdapter::Ptr                        getGlobalAttribute( const std::string &name );
 		virtual Primitive::Ptr                               getPrimitive( int index );
 		virtual Topology::Ptr                                getTopology();
 

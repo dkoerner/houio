@@ -52,6 +52,13 @@ namespace houio
 			m_attributes.erase( it );
 	}
 
+	void Geometry::getAttrNames(std::vector<std::string> &names)
+	{
+		names.clear();
+		for( auto it = m_attributes.begin(), end = m_attributes.end();it!=end;++it )
+			names.push_back(it->first);
+	}
+
 	Geometry::PrimitiveType Geometry::primitiveType()
 	{
 		return m_primitiveType;

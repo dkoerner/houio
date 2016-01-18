@@ -177,7 +177,10 @@ namespace houio
 	}
 
 	HouGeo::HouAttribute::HouAttribute( const std::string &name, Attribute::Ptr attr ) : AttributeAdapter(),
-		m_attr(attr), m_name(name), m_type(HouGeoAdapter::AttributeAdapter::ATTR_TYPE_NUMERIC)
+		m_attr(attr),
+		m_name(name),
+		m_type(HouGeoAdapter::AttributeAdapter::ATTR_TYPE_NUMERIC),
+		numElements(attr->numElements())
 	{
 		switch( m_attr->elementComponentType() )
 		{
