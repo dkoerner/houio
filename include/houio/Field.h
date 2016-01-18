@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <memory>
+#include <cstring>
 
 #include <houio/math/Math.h>
 
@@ -53,6 +54,7 @@ namespace houio
 		void                                   fill( T value, const math::Box3f &wsBound ); // fills all voxels with the same value within given (worldspace)bound
 		void                                                           multiply( T value ); // multiplies all voxelswith given value
 		void                                          store( const std::string &filename ); // saves field to file
+		void                        storeWithoutBoundingBox( const std::string &filename ); // saves field to file
 
 
 
@@ -99,9 +101,9 @@ namespace houio
 	typename Field<T>::Ptr Field<T>::create( typename Field<R>::Ptr src)
 	{
 		Field<T>::Ptr dst = Field<T>::create( src->getResolution(), src->bound() );
-		std::vector<R>::iterator srcIt = src->m_data.begin();
-		std::vector<T>::iterator dstIt = dst->m_data.begin();
-		std::vector<T>::iterator dstEnd = dst->m_data.end();
+		typename std::vector<R>::iterator srcIt = src->m_data.begin();
+		typename std::vector<T>::iterator dstIt = dst->m_data.begin();
+		typename std::vector<T>::iterator dstEnd = dst->m_data.end();
 		for( ; dstIt != dstEnd; ++dstIt, ++srcIt )
 			*dstIt = (T)*srcIt;
 		return dst;
@@ -159,6 +161,16 @@ namespace houio
 		out.write( (const char *)&m_data[0], sizeof(T)*m_resolution.x*m_resolution.y*m_resolution.z );
 	}
 
+	template<typename T>
+	void Field<T>::storeWithoutBoundingBox( const std::string &filename )
+	{
+		std::ofstream out( filename.c_str(), std::ios_base::out | std::ios_base::binary | std::ios_base::trunc );
+
+		// save bound, resolution, data to file
+		out.write( (const char *)&m_resolution, sizeof(int)*3 );
+		out.write( (const char *)&m_dataType, sizeof(int) );
+		out.write( (const char *)&m_data[0], sizeof(T)*m_resolution.x*m_resolution.y*m_resolution.z );
+	}
 
 	template<typename T>
 	void Field<T>::resize( int x, int y, int z )
@@ -362,7 +374,7 @@ namespace houio
 	template<typename T>
 	void Field<T>::multiply( T value )
 	{
-		for( std::vector<T>::iterator it = m_data.begin(), end = m_data.end(); it != end; ++it )
+		for( typename std::vector<T>::iterator it = m_data.begin(), end = m_data.end(); it != end; ++it )
 			*it *= value;
 	}
 
@@ -383,7 +395,7 @@ namespace houio
 	template<typename T>
 	void field_range( const Field<T> &field, T& min, T& max )
 	{
-		auto minmax = std::minmax( field.m_data.begin(), field.m_data.end() );
+		auto minmax = std::minmax_element( field.m_data.begin(), field.m_data.end() );
 		min = *minmax.first;
 		max = *minmax.second;
 	}
@@ -469,6 +481,7 @@ namespace houio
 	typedef Field<float> Fieldf;
 	typedef Field<float> ScalarField;
 	typedef Field<math::V3f> Field3f;
+	typedef Field<math::V3f> VectorField;
 	typedef Field<double> Fieldd;
 	typedef Field<math::V3d> Field3d;
 

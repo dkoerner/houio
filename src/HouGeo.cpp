@@ -1,6 +1,6 @@
 #include <houio/HouGeo.h>
 
-
+#include <cstring>
 
 
 
@@ -180,6 +180,8 @@ namespace houio
 		m_attr(attr),
 		m_name(name),
 		m_type(HouGeoAdapter::AttributeAdapter::ATTR_TYPE_NUMERIC),
+		m_storage(ATTR_STORAGE_FPREAL32),
+		tupleSize(attr->numComponents()),
 		numElements(attr->numElements())
 	{
 		switch( m_attr->elementComponentType() )
@@ -299,6 +301,8 @@ namespace houio
 	// a has to be the root of the array from hou geo
 	void HouGeo::load( json::ObjectPtr o )
 	{
+		SharedPrimitiveData sharedPrimitiveData;
+
 		sint64 numVertices = 0;
 		sint64 numPoints = 0;
 		sint64 numPrimitives = 0;
@@ -361,6 +365,24 @@ namespace houio
 		{
 			loadTopology( toObject(o->getArray("topology")) );
 		}
+		if( o->hasKey("sharedprimitivedata") )
+		{
+			json::ArrayPtr entries = o->getArray("sharedprimitivedata");
+
+			int numEntries = (int)entries->size()/2;
+			for( int i=0;i<numEntries;++i )
+			{
+				int index = i*2;
+				std::string type_questionmark = entries->get<std::string>(index);
+				json::ArrayPtr entry = entries->getArray(index+1);
+
+				std::string type2_questionmark = entry->get<std::string>(0);
+				std::string id = entry->get<std::string>(1);
+				json::ArrayPtr data = entry->getArray(2);
+
+				sharedPrimitiveData.sharedVoxelData[id] = toObject(data);
+			}
+		}
 		if( o->hasKey("primitives") )
 		{
 			json::ArrayPtr primitives = o->getArray("primitives");
@@ -368,7 +390,7 @@ namespace houio
 			for( int j=0;j<numPrimitives;++j )
 			{
 				json::ArrayPtr primitive = primitives->getArray(j);
-				loadPrimitive( primitive );
+				loadPrimitive( primitive, sharedPrimitiveData );
 			}
 		}
 	}
@@ -581,7 +603,7 @@ namespace houio
 		m_topology = top;
 	}
 
-	void HouGeo::loadPrimitive( json::ArrayPtr primitive )
+	void HouGeo::loadPrimitive( json::ArrayPtr primitive, SharedPrimitiveData& sharedPrimitiveData )
 	{
 		// we follow the scheme from houdini...
 
@@ -595,7 +617,7 @@ namespace houio
 
 		// primitive
 		if( primitiveType=="Volume" )
-			loadVolumePrimitive( toObject(primitive->getArray(1)) );
+			loadVolumePrimitive( toObject(primitive->getArray(1)), sharedPrimitiveData );
 		else
 		if( primitiveType=="Poly" )
 			loadPolyPrimitive( toObject(primitive->getArray(1)) );
@@ -610,7 +632,7 @@ namespace houio
 
 	// HouGeo::HouVolume ==================================================
 
-	void HouGeo::loadVolumePrimitive( json::ObjectPtr volume )
+	void HouGeo::loadVolumePrimitive( json::ObjectPtr volume, SharedPrimitiveData& sharedPrimitiveData )
 	{
 		HouVolume::Ptr vol = std::make_shared<HouVolume>();
 		vol->field = std::make_shared<ScalarField>();
@@ -662,162 +684,174 @@ namespace houio
 
 			vol->field->setLocalToWorld( localToWorld );
 		}
+
+		if( volume->hasKey("sharedvoxels") )
+		{
+			std::string dataid = volume->get<std::string>("sharedvoxels");
+			auto it = sharedPrimitiveData.sharedVoxelData.find(dataid);
+			if( it != sharedPrimitiveData.sharedVoxelData.end() )
+			{
+				json::ObjectPtr voxels = it->second;
+				loadVoxelData( voxels, vol->field->getResolution(), vol->field->getRawPointer() );
+			}else
+				throw std::runtime_error( "HouGeo::loadVolumePrimitive: error shared voxel data not found\n" );
+		}
+
 		if( volume->hasKey("voxels") )
 		{
-			json::ObjectPtr voxels = toObject(volume->getArray("voxels"));
-			if( voxels->hasKey("tiledarray") )
-			{
-				json::ObjectPtr tiledarray = toObject(voxels->getArray("tiledarray"));
-
-				std::vector<int> compressionTypes;
-				// 1 = rawfull
-				// 2 = constant
-
-				if( tiledarray->hasKey("compressiontypes") )
-				{
-					json::ArrayPtr ct = tiledarray->getArray("compressiontypes");
-					for( int cti=0;cti<ct->size();++cti )
-					{
-						//std::cout << ct->get<std::string>(cti) << std::endl;
-						if( ct->get<std::string>(cti) == "raw" )
-							compressionTypes.push_back( 0 );
-						else
-						if( ct->get<std::string>(cti) == "rawfull" )
-							compressionTypes.push_back( 1 );
-						else
-						if( ct->get<std::string>(cti) == "constant" )
-							compressionTypes.push_back( 2 );
-						else
-							compressionTypes.push_back( -1 );
-					}
-
-				}
-				if( tiledarray->hasKey("tiles") )
-				{
-					json::ArrayPtr tiles = tiledarray->getArray("tiles");
-					sint64 numTiles = tiles->size();
-					math::Vec3i res = vol->field->getResolution();
-
-					// looks like houdini uses some spatial tiling where each tile has
-					// a resolution of 16x16x16 (or less on boundary tiles)
-					// the whole resolution domain is split into such tiles
-					// the first tile starts at 0,0,0 and the ordering is identical
-					// to the ordering of voxel values (x being the fastest and z slowest)
-
-					// get first invalid tileindex in each dimension
-					math::Vec3i tileEnd;
-					tileEnd.x = res.x / 16;
-					tileEnd.y = res.y / 16;
-					tileEnd.z = res.z / 16;
-
-					// if there are some voxels remaining, add another tile
-					if( res.x%16 )
-						++tileEnd.x;
-					if( res.y%16 )
-						++tileEnd.y;
-					if( res.z%16 )
-						++tileEnd.z;
-
-					// sanity check - number of tiles has to match
-					if( (tileEnd.x*tileEnd.y*tileEnd.z)!=numTiles )
-						throw std::runtime_error("HouGeo::loadVolumePrimitive problem");
-
-					int currentTileIndex = 0;
-					math::Vec3i voxelOffset; // start offset (in voxels) for current tile
-					math::Vec3i numVoxels;   // number of voxels for current tile (may differ in each dimension)
-
-					// we iterate all tiles starting from slowest to fastest (inner loop)
-					// in each iteration we compute the amount of remaining voxels which is either 16 or smaller for boundary tiles
-					int remainK = res.z;
-					for( int tk=0; tk<tileEnd.z;++tk )
-					{
-						voxelOffset.z = tk*16;
-						numVoxels.z = std::min( 16,  remainK );
-
-						int remainJ = res.y;
-						for( int tj=0; tj<tileEnd.y;++tj )
-						{
-							voxelOffset.y = tj*16;
-							numVoxels.y = std::min( 16,  remainJ );
-
-							int remainI = res.x;
-							for( int ti=0; ti<tileEnd.x;++ti, ++currentTileIndex )
-							{
-								voxelOffset.x = ti*16;
-								numVoxels.x = std::min( 16,  remainI );
-
-								json::ObjectPtr tile = toObject(tiles->getArray(currentTileIndex));
-								int tileCompression = 1;
-								if( tile->hasKey("compression") )
-								{
-									tileCompression = tile->get<sint32>("compression");
-								}
-								if( tile->hasKey("data") )
-								{
-									switch( tileCompression )
-									{
-									case 0: // raw
-									case 1: // rawfull
-										{
-											json::ArrayPtr data = tile->getArray("data");
-											int numElements = (int)data->size();
-
-											if( (numVoxels.x*numVoxels.y*numVoxels.z)!=numElements )
-												throw std::runtime_error("HouGeo::loadVolumePrimitive problem");
-
-											float *volData = vol->field->getRawPointer();
-
-											if( data->isUniform() && (data->m_uniformType == 2) )
-											{
-												int v = 0;
-												for( int k=0;k<numVoxels.z;++k )
-													for( int j=0;j<numVoxels.y;++j, v+=numVoxels.x )
-														// copy a complete scanline directly
-														memcpy( &volData[(tk*16+k)*res.x*res.y + (tj*16+j)*res.x + (ti*16)], &data->m_uniformdata[v*sizeof(float)], numVoxels.x*sizeof(float) );
-											}else
-											{
-												int v = 0;
-												for( int k=0;k<numVoxels.z;++k )
-													for( int j=0;j<numVoxels.y;++j )
-														for( int i=0;i<numVoxels.x;++i,++v )
-															volData[(tk*16+k)*res.x*res.y + (tj*16+j)*res.x + (ti*16+i)] = data->get<float>(v);
-											}
-										}break;
-									case 2: // constant
-										{
-											float data = tile->get<float>("data");
-											float *volData = vol->field->getRawPointer();
-											int v = 0;
-											for( int k=0;k<numVoxels.z;++k )
-												for( int j=0;j<numVoxels.y;++j )
-													for( int i=0;i<numVoxels.x;++i,++v )
-														volData[(tk*16+k)*res.x*res.y + (tj*16+j)*res.x + (ti*16+i)] = data;
-
-										}break;
-									case -1:
-									default:
-										throw std::runtime_error("HouGeo::loadVolumePrimitive unknown compressiontype");
-										break;
-									};
-								}
-								remainI -=16;
-							}
-							remainJ -=16;
-						}
-						remainK -=16;
-					}
-				}
-			}else // /tiledarray
-			if( voxels->hasKey("constantarray") )
-			{
-				float constantValue = voxels->get<float>( "constantarray" );
-				vol->field->fill(constantValue);
-			}
+			loadVoxelData( toObject(volume->getArray("voxels")), vol->field->getResolution(), vol->field->getRawPointer() );
 		}
 
 		m_primitives.push_back( vol );
 	}
 
+	void HouGeo::loadVoxelData( json::ObjectPtr voxels, const math::V3i& res, float* volData )
+	{
+		if( voxels->hasKey("tiledarray") )
+		{
+			json::ObjectPtr tiledarray = toObject(voxels->getArray("tiledarray"));
+
+			std::vector<int> compressionTypes;
+			// 1 = rawfull
+			// 2 = constant
+
+			if( tiledarray->hasKey("compressiontypes") )
+			{
+				json::ArrayPtr ct = tiledarray->getArray("compressiontypes");
+				for( int cti=0;cti<ct->size();++cti )
+				{
+					//std::cout << ct->get<std::string>(cti) << std::endl;
+					if( ct->get<std::string>(cti) == "raw" )
+						compressionTypes.push_back( 0 );
+					else
+					if( ct->get<std::string>(cti) == "rawfull" )
+						compressionTypes.push_back( 1 );
+					else
+					if( ct->get<std::string>(cti) == "constant" )
+						compressionTypes.push_back( 2 );
+					else
+						compressionTypes.push_back( -1 );
+				}
+
+			}
+			if( tiledarray->hasKey("tiles") )
+			{
+				json::ArrayPtr tiles = tiledarray->getArray("tiles");
+				sint64 numTiles = tiles->size();
+
+				// looks like houdini uses some spatial tiling where each tile has
+				// a resolution of 16x16x16 (or less on boundary tiles)
+				// the whole resolution domain is split into such tiles
+				// the first tile starts at 0,0,0 and the ordering is identical
+				// to the ordering of voxel values (x being the fastest and z slowest)
+
+				// get first invalid tileindex in each dimension
+				math::Vec3i tileEnd;
+				tileEnd.x = res.x / 16;
+				tileEnd.y = res.y / 16;
+				tileEnd.z = res.z / 16;
+
+				// if there are some voxels remaining, add another tile
+				if( res.x%16 )
+					++tileEnd.x;
+				if( res.y%16 )
+					++tileEnd.y;
+				if( res.z%16 )
+					++tileEnd.z;
+
+				// sanity check - number of tiles has to match
+				if( (tileEnd.x*tileEnd.y*tileEnd.z)!=numTiles )
+					throw std::runtime_error("HouGeo::loadVolumePrimitive problem");
+
+				int currentTileIndex = 0;
+				math::Vec3i voxelOffset; // start offset (in voxels) for current tile
+				math::Vec3i numVoxels;   // number of voxels for current tile (may differ in each dimension)
+
+				// we iterate all tiles starting from slowest to fastest (inner loop)
+				// in each iteration we compute the amount of remaining voxels which is either 16 or smaller for boundary tiles
+				int remainK = res.z;
+				for( int tk=0; tk<tileEnd.z;++tk )
+				{
+					voxelOffset.z = tk*16;
+					numVoxels.z = std::min( 16,  remainK );
+
+					int remainJ = res.y;
+					for( int tj=0; tj<tileEnd.y;++tj )
+					{
+						voxelOffset.y = tj*16;
+						numVoxels.y = std::min( 16,  remainJ );
+
+						int remainI = res.x;
+						for( int ti=0; ti<tileEnd.x;++ti, ++currentTileIndex )
+						{
+							voxelOffset.x = ti*16;
+							numVoxels.x = std::min( 16,  remainI );
+
+							json::ObjectPtr tile = toObject(tiles->getArray(currentTileIndex));
+							int tileCompression = 1;
+							if( tile->hasKey("compression") )
+							{
+								tileCompression = tile->get<sint32>("compression");
+							}
+							if( tile->hasKey("data") )
+							{
+								switch( tileCompression )
+								{
+								case 0: // raw
+								case 1: // rawfull
+									{
+										json::ArrayPtr data = tile->getArray("data");
+										int numElements = (int)data->size();
+
+										if( (numVoxels.x*numVoxels.y*numVoxels.z)!=numElements )
+											throw std::runtime_error("HouGeo::loadVolumePrimitive problem");
+
+										if( data->isUniform() && (data->m_uniformType == 2) )
+										{
+											int v = 0;
+											for( int k=0;k<numVoxels.z;++k )
+												for( int j=0;j<numVoxels.y;++j, v+=numVoxels.x )
+													// copy a complete scanline directly
+													memcpy( &volData[(tk*16+k)*res.x*res.y + (tj*16+j)*res.x + (ti*16)], &data->m_uniformdata[v*sizeof(float)], numVoxels.x*sizeof(float) );
+										}else
+										{
+											int v = 0;
+											for( int k=0;k<numVoxels.z;++k )
+												for( int j=0;j<numVoxels.y;++j )
+													for( int i=0;i<numVoxels.x;++i,++v )
+														volData[(tk*16+k)*res.x*res.y + (tj*16+j)*res.x + (ti*16+i)] = data->get<float>(v);
+										}
+									}break;
+								case 2: // constant
+									{
+										float data = tile->get<float>("data");
+										int v = 0;
+										for( int k=0;k<numVoxels.z;++k )
+											for( int j=0;j<numVoxels.y;++j )
+												for( int i=0;i<numVoxels.x;++i,++v )
+													volData[(tk*16+k)*res.x*res.y + (tj*16+j)*res.x + (ti*16+i)] = data;
+
+									}break;
+								case -1:
+								default:
+									throw std::runtime_error("HouGeo::loadVolumePrimitive unknown compressiontype");
+									break;
+								};
+							}
+							remainI -=16;
+						}
+						remainJ -=16;
+					}
+					remainK -=16;
+				}
+			}
+		}else // /tiledarray
+		if( voxels->hasKey("constantarray") )
+		{
+			float constantValue = voxels->get<float>( "constantarray" );
+			std::fill( volData, volData + res.x*res.y*res.z, constantValue );
+		}
+	}
 
 	int HouGeo::HouVolume::getVertex()const
 	{

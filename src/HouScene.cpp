@@ -1,5 +1,6 @@
-#include "HouScene.h"
+#include <houio/HouScene.h>
 
+/*
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -7,6 +8,7 @@
 #include <QStringList>
 #include <QDebug>
 #include <QVariantMap>
+*/
 
 HouScene::HouScene()
 {
@@ -17,6 +19,7 @@ HouScene::~HouScene()
 {
 }
 
+/*
 base::Camera::Ptr HouScene::getCamera( const QString &name )
 {
 	auto it = m_cameras.find(name);
@@ -59,3 +62,4 @@ void HouScene::load( const QString &filename )
 			m_cameras[it.key()] = loadCamera( it.value().toObject() );
 	}
 }
+*/

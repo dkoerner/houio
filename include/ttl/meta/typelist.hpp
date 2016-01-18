@@ -129,7 +129,11 @@ namespace impl
 		{
 			if( i == N ) 
 			{
-				f.operator()<typename impl::get<L,N>::type>();
+#ifdef __clang__
+                            f.template operator()<typename impl::get<L,N>::type>();
+#else  // __clang__
+                            f.operator()<typename impl::get<L,N>::type>();
+#endif // __clang__
 			}
 			else
 			{

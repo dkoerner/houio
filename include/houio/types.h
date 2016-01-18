@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef _MSC_VER
+#include <stdint.h>
+#endif
+
 namespace houio
 {
 
@@ -22,18 +26,21 @@ typedef float                 real32;
 typedef double                real64;
 
 #else
-typedef unsigned long long    uint64;
-typedef signed long long      sint64;
-typedef unsigned int          uint32;
-typedef float                 real32;
-typedef double                real64;
+typedef uint64_t   uint64;
+typedef int64_t    sint64;
+typedef uint32_t   uint32;
+typedef int32_t    sint32;
+typedef uint16_t   uint16;
+typedef int16_t    sint16;
+typedef float      real32;
+typedef double     real64;
 
-typedef signed   char          sbyte;
-typedef unsigned char          ubyte;
-typedef signed   short int     sword;
-typedef unsigned short int     uword;
-typedef signed   long  int    sdword;
-typedef unsigned long  int    udword;
+typedef int8_t     sbyte;
+typedef uint8_t    ubyte;
+typedef int16_t    sword;
+typedef uint16_t   uword;
+typedef int32_t    sdword;
+typedef uint32_t   udword;
 #endif
 
 }

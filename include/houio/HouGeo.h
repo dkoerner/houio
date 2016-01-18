@@ -117,13 +117,21 @@ namespace houio
 
 
 
+		// this structure carries some global json data which I dont want to have as members of hougeo
+		struct SharedPrimitiveData
+		{
+			std::map<std::string, json::ObjectPtr> sharedVoxelData;
+		};
+
 		void                                                 load( json::ObjectPtr o ); // a has to be the root of the array from hou geo
 		HouAttribute::Ptr                                    loadAttribute( json::ArrayPtr attribute, sint64 elementCount );
 		void                                                 loadTopology( json::ObjectPtr o );
-		void                                                 loadPrimitive( json::ArrayPtr primitive );
-		void                                                 loadVolumePrimitive( json::ObjectPtr volume );
+		void                                                 loadPrimitive( json::ArrayPtr primitive, SharedPrimitiveData& sharedPrimitiveData );
+		void                                                 loadVolumePrimitive( json::ObjectPtr volume, SharedPrimitiveData& sharedPrimitiveData );
 		void                                                 loadPolyPrimitive( json::ObjectPtr poly );
 		void                                                 loadPolyPrimitiveRun( json::ObjectPtr def, json::ArrayPtr run );
+
+		void                                                 loadVoxelData( json::ObjectPtr voxels, const math::V3i& res, float* volData );
 
 
 		static json::ObjectPtr                               toObject( json::ArrayPtr a ); // turns json array into jsonObject (every first entry is key, every second is value)

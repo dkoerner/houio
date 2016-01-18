@@ -50,6 +50,7 @@ namespace houio
 		Attribute::Ptr                                              getAttr( const std::string &name );
 		void                                                        setAttr( const std::string &name, Attribute::Ptr attr );
 		bool                                                        hasAttr( const std::string &name );
+		void                                                        getAttrNames( std::vector<std::string>& attrNames )const;
 		void                                                        removeAttr( const std::string &name );
 		void                                                        getAttrNames(std::vector<std::string>& names);
 
