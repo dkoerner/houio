@@ -76,13 +76,15 @@ namespace houio
 		struct Primitive
 		{
 			typedef std::shared_ptr<Primitive> Ptr;
-
-			virtual ~Primitive(){}
 			enum Type
 			{
 				PRIM_VOLUME,
 				PRIM_POLY
 			};
+			virtual ~Primitive(){}
+
+			// will be overloaded by primitive runs which represent multiple prims
+			virtual int numPrimitives()const{return 1;}
 		};
 
 		struct VolumePrimitive : public Primitive
@@ -102,7 +104,8 @@ namespace houio
 
 			virtual int                        numPolys()const;
 			virtual int                        numVertices( int poly )const;
-			virtual int const*                 vertices()const;
+			virtual int const*                 vertices(int poly=0)const;
+			virtual int numPrimitives()const override{return numPolys();}
 		};
 
 
@@ -110,12 +113,15 @@ namespace houio
 		virtual sint64                vertexcount()const;
 		virtual sint64                primitivecount()const;
 		virtual void                  getPointAttributeNames( std::vector<std::string> &names )const;
-		virtual AttributeAdapter::Ptr        getPointAttribute( const std::string &name );
+		virtual AttributeAdapter::Ptr getPointAttribute( const std::string &name );
+		virtual void                  getVertexAttributeNames( std::vector<std::string> &names )const;
+		virtual AttributeAdapter::Ptr getVertexAttribute( const std::string &name );
 		virtual void                  getGlobalAttributeNames( std::vector<std::string> &names )const;
-		virtual AttributeAdapter::Ptr        getGlobalAttribute( const std::string &name );
+		virtual AttributeAdapter::Ptr getGlobalAttribute( const std::string &name );
+		virtual bool                  hasPrimitiveAttribute( const std::string &name )const;
 		virtual void                  getPrimitiveAttributeNames( std::vector<std::string> &names )const=0;
-		virtual AttributeAdapter::Ptr        getPrimitiveAttribute( const std::string &name )=0;
-		virtual Primitive::Ptr        getPrimitive( int index );
+		virtual AttributeAdapter::Ptr getPrimitiveAttribute( const std::string &name )=0;
+		virtual void                  getPrimitives( std::vector<HouGeoAdapter::Primitive::Ptr>& primitives );
 		virtual Topology::Ptr         getTopology();
 	};
 

@@ -9,7 +9,8 @@ namespace houio
 {
 
 
-	HouGeo::HouGeo() : HouGeoAdapter()
+	HouGeo::HouGeo() :
+		HouGeoAdapter()
 	{
 	}
 
@@ -30,8 +31,13 @@ namespace houio
 
 	sint64 HouGeo::primitivecount()const
 	{
-		return m_primitives.size();
+		// each primitive may actually represent multiple primitives (e.g. poly runs)
+		sint64 sum = 0;
+		for( auto& prim : m_primitives )
+			sum+=prim->numPrimitives();
+		return sum;
 	}
+
 
 	void HouGeo::getPointAttributeNames( std::vector<std::string> &names )const
 	{
@@ -99,13 +105,11 @@ namespace houio
 		return HouGeoAdapter::AttributeAdapter::Ptr();
 	}
 
-
-
-	HouGeo::Primitive::Ptr HouGeo::getPrimitive( int index )
+	void HouGeo::getPrimitives( std::vector<HouGeoAdapter::Primitive::Ptr>& primitives )
 	{
-		if( index < m_primitives.size() )
-			return m_primitives[index];
-		return HouGeo::Primitive::Ptr();
+		primitives.clear();
+		for( auto prim:m_primitives )
+			primitives.push_back(prim);
 	}
 
 	HouGeo::Topology::Ptr HouGeo::getTopology()
@@ -154,6 +158,16 @@ namespace houio
 
 
 		m_primitives.push_back( hvol );
+	}
+
+	void HouGeo::addPrimitive( PolyPrimitive::Ptr poly )
+	{
+		m_primitives.push_back( poly );
+	}
+
+	void HouGeo::setTopology( HouTopology::Ptr topo )
+	{
+		m_topology = topo;
 	}
 
 
@@ -278,6 +292,12 @@ namespace houio
 
 
 	// Topology ==============================
+
+	HouGeo::HouTopology::HouTopology() :
+		Topology(),
+		indexBuffer()
+	{
+	}
 
 	void HouGeo::HouTopology::getIndices( std::vector<int> &indices )const
 	{
@@ -912,6 +932,7 @@ namespace houio
 			json::ArrayPtr c = run->getArray(i)->getArray(0);
 			int numVertices = (int)c->size();
 			pol->m_perPolyVertexCount.push_back(numVertices);
+			pol->m_perPolyVertexListOffset.push_back(vertex);
 			for( int j=0;j<numVertices; ++j, ++vertex )
 				pol->m_vertices.push_back(m_topology->indexBuffer[c->get<sint32>(j)]);
 		}
@@ -928,9 +949,9 @@ namespace houio
 		return m_perPolyVertexCount[poly];
 	}
 
-	int const *HouGeo::HouPoly::vertices()const
+	int const *HouGeo::HouPoly::vertices( int poly )const
 	{
-		return &m_vertices[0];
+		return &m_vertices[m_perPolyVertexListOffset[poly]];
 	}
 
 

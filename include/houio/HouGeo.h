@@ -52,6 +52,7 @@ namespace houio
 
 		struct HouTopology : public Topology
 		{
+			HouTopology();
 			typedef std::shared_ptr<HouTopology> Ptr;
 			virtual void                          getIndices( std::vector<int> &indices )const override;
 			virtual void                          addIndices( std::vector<int> &indices );
@@ -77,14 +78,14 @@ namespace houio
 		struct HouPoly : public PolyPrimitive
 		{
 			typedef std::shared_ptr<HouPoly> Ptr;
-			virtual int                                       numPolys()const;
-			virtual int                                       numVertices( int poly )const;
-			virtual int const*                                vertices()const;
+			virtual int                                       numPolys()const override;
+			virtual int                                       numVertices( int poly )const override;
+			virtual int const*                                vertices(int poly=0)const override;
 			int                                               m_numPolys;
 			std::vector<int>                                  m_perPolyVertexCount; // holds number of vertices for each polygon
+			std::vector<int>                                  m_perPolyVertexListOffset; // holds offset into m_vertices per poly
 			std::vector<int>                                  m_vertices; // vertex indicess for each vertex
 		};
-
 
 
 
@@ -96,23 +97,25 @@ namespace houio
 		void                                                 setPointAttribute( HouAttribute::Ptr attr );
 		void                                                 setPrimitiveAttribute( const std::string &name, HouAttribute::Ptr attr );
 		void                                                 addPrimitive( ScalarField::Ptr field );
+		void                                                 addPrimitive( PolyPrimitive::Ptr poly );
+		void                                                 setTopology( HouTopology::Ptr topo );
 
 
 		// inherited from HouGeoAdapter
-		virtual sint64                                       pointcount()const;
-		virtual sint64                                       vertexcount()const;
-		virtual sint64                                       primitivecount()const;
-		virtual void                                         getPointAttributeNames( std::vector<std::string> &names )const;
-		virtual AttributeAdapter::Ptr                        getPointAttribute( const std::string &name );
-		virtual void                                         getVertexAttributeNames( std::vector<std::string> &names )const;
-		virtual AttributeAdapter::Ptr                        getVertexAttribute( const std::string &name );
-		virtual bool                                         hasPrimitiveAttribute( const std::string &name )const;
-		virtual void                                         getPrimitiveAttributeNames( std::vector<std::string> &names )const;
-		virtual AttributeAdapter::Ptr                        getPrimitiveAttribute( const std::string &name );
-		virtual void                                         getGlobalAttributeNames( std::vector<std::string> &names )const;
-		virtual AttributeAdapter::Ptr                        getGlobalAttribute( const std::string &name );
-		virtual Primitive::Ptr                               getPrimitive( int index );
-		virtual Topology::Ptr                                getTopology();
+		virtual sint64                                       pointcount()const override;
+		virtual sint64                                       vertexcount()const override;
+		virtual sint64                                       primitivecount()const override;
+		virtual void                                         getPointAttributeNames( std::vector<std::string> &names )const override;
+		virtual AttributeAdapter::Ptr                        getPointAttribute( const std::string &name ) override;
+		virtual void                                         getVertexAttributeNames( std::vector<std::string> &names )const override;
+		virtual AttributeAdapter::Ptr                        getVertexAttribute( const std::string &name ) override;
+		virtual bool                                         hasPrimitiveAttribute( const std::string &name )const override;
+		virtual void                                         getPrimitiveAttributeNames( std::vector<std::string> &names )const override;
+		virtual AttributeAdapter::Ptr                        getPrimitiveAttribute( const std::string &name ) override;
+		virtual void                                         getPrimitives( std::vector<HouGeoAdapter::Primitive::Ptr>& primitives )override;
+		virtual void                                         getGlobalAttributeNames( std::vector<std::string> &names )const override;
+		virtual AttributeAdapter::Ptr                        getGlobalAttribute( const std::string &name ) override;
+		virtual Topology::Ptr                                getTopology() override;
 
 
 
@@ -135,6 +138,7 @@ namespace houio
 
 
 		static json::ObjectPtr                               toObject( json::ArrayPtr a ); // turns json array into jsonObject (every first entry is key, every second is value)
+
 	private:
 		std::vector<Primitive::Ptr>                                              m_primitives;
 		std::map<std::string, HouAttribute::Ptr>                            m_pointAttributes;

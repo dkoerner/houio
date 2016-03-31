@@ -130,7 +130,7 @@ namespace houio
 		return 0;
 	}
 
-	int const *HouGeoAdapter::PolyPrimitive::vertices()const
+	int const *HouGeoAdapter::PolyPrimitive::vertices( int poly )const
 	{
 		return 0;
 	}
@@ -164,6 +164,15 @@ namespace houio
 		return AttributeAdapter::Ptr();
 	}
 
+	void HouGeoAdapter::getVertexAttributeNames( std::vector<std::string> &names )const
+	{
+	}
+	HouGeoAdapter::AttributeAdapter::Ptr HouGeoAdapter::getVertexAttribute( const std::string &name )
+	{
+		return AttributeAdapter::Ptr();
+	}
+
+
 	void HouGeoAdapter::getGlobalAttributeNames( std::vector<std::string> &names )const
 	{
 	}
@@ -173,9 +182,13 @@ namespace houio
 		return AttributeAdapter::Ptr();
 	}
 
-	HouGeoAdapter::Primitive::Ptr HouGeoAdapter::getPrimitive( int index )
+	bool HouGeoAdapter::hasPrimitiveAttribute( const std::string &name )const
 	{
-		return HouGeoAdapter::Primitive::Ptr();
+		return false;
+	}
+
+	void HouGeoAdapter::getPrimitives( std::vector<HouGeoAdapter::Primitive::Ptr>& primitives )
+	{
 	}
 
 	HouGeoAdapter::Topology::Ptr HouGeoAdapter::getTopology()
