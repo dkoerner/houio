@@ -12,6 +12,8 @@ namespace houio
 	struct Attribute
 	{
 		typedef std::shared_ptr<Attribute> Ptr;
+		typedef std::shared_ptr<const Attribute> CPtr;
+
 		enum ComponentType
 		{
 			INVALID,

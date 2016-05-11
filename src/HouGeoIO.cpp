@@ -155,7 +155,6 @@ namespace houio
 		std::vector<std::string> vertexAttributesNames;
 		houGeo->getVertexAttributeNames(vertexAttributesNames);
 
-		std::cout << "!!!!!!!!\n";
 		// convert point attributes ---
 		for( std::vector<std::string>::iterator it = pointAttributesNames.begin(), end = pointAttributesNames.end();  it != end; ++it )
 		{

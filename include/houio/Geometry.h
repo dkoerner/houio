@@ -42,6 +42,11 @@ namespace houio
 		void                                                        transform( const math::M44f& tm );
 		void                                                        addNormals();
 
+		//
+		// info
+		//
+		math::BoundingBox3f                                         getBound();
+
 
 
 		//

@@ -217,6 +217,21 @@ namespace houio
 		setAttr( "N", normalAttr );
 	}
 
+	math::BoundingBox3f Geometry::getBound()
+	{
+		math::BoundingBox3f bound;
+
+		Attribute::Ptr positions = getAttr("P");
+		if(positions)
+		{
+			int numPoints = positions->numElements();
+			for( int i=0; i < numPoints; ++i )
+				bound.extend(positions->get<math::V3f>(i));
+		}
+
+		return bound;
+	}
+
 	//
 	// removes all attributes and primitives
 	//
