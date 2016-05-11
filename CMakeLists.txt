@@ -18,6 +18,8 @@ ADD_LIBRARY ( houio STATIC
   src/Geometry.cpp
   )
 
+# trigger cxx standard (c++11)
+target_compile_features(houio PUBLIC cxx_constexpr)
 
 
 # install target (the lib file) and register the target in export set ---
