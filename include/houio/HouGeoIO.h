@@ -16,6 +16,8 @@ namespace houio
 
 		static bool                             xport( const std::string& filename, ScalarField::Ptr volume ); // convinience funcion for quickly saving volume to bgeo
 		static bool                             xport( const std::string& filename, Geometry::Ptr geo ); // convinience funcion for quickly saving geometry to bgeo
+		static bool                             xport( const std::string& filename, const std::vector<math::V3f>& points );
+		static bool                             xport( const std::string& filename, const std::map<std::string, std::vector<math::V3f>>& pattr_v3f );
 		static bool                             xport( std::ostream *out, HouGeoAdapter::Ptr geo , bool binary = true);
 
 	private:

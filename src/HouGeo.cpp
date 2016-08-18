@@ -915,6 +915,7 @@ namespace houio
 			int numVertices = (int) vertex->size();
 			pol->m_numPolys = 1;
 			pol->m_perPolyVertexCount.push_back(numVertices);
+			pol->m_perPolyVertexListOffset.push_back(0);
 			for(int i=0;i<numVertices;++i)
 				pol->m_vertices.push_back( m_topology->indexBuffer[vertex->get<sint32>(i)] );
 		}

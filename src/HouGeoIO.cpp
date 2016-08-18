@@ -160,9 +160,6 @@ namespace houio
 		{
 			std::string attrName = *it;
 			HouGeoAdapter::AttributeAdapter::Ptr houAttr = houGeo->getPointAttribute(attrName);
-
-			std::cout << "test attrName=" << attrName << std::endl;
-
 			int numComponents = houAttr->getTupleSize();
 
 			Attribute::Ptr attr;
@@ -198,7 +195,6 @@ namespace houio
 
 			}else
 				std::cout << "HouGeoIO::convertToGeometry: warning: unable to handle storage type " << houAttr->getStorage() << " for attribute " << attrName << std::endl;
-
 
 			result->setAttr( attrName, attr );
 		}
@@ -246,10 +242,10 @@ namespace houio
 			HouGeo::HouPoly::Ptr poly = std::dynamic_pointer_cast<HouGeo::HouPoly>(houPrim);
 			sint64 numPolys = poly->numPolys();
 
+
 			// since opengl doesnt support face varying data we also dont support it in our geometry
 			// therefore we need convert our vertex attribute to point attributes and duplicate those points
 			// which have different vertex data
-
 			const int *vertex_ptr = poly->vertices();
 
 			std::vector<bool> pointsToSplit(numPoints, false);
@@ -274,7 +270,6 @@ namespace houio
 					}else
 						firstVertex[point] = i;
 			}
-
 
 			int vertexIndex = 0;
 			for( int i=0;i<numPolys;++i )
@@ -302,9 +297,6 @@ namespace houio
 							memcpy( it->second->getRawPointer(finalPointIndex), it->first->getRawPointer(vertexIndex), it->first->elementComponentSize()*it->first->numComponents());
 					}
 
-					//std::cout << i << ":" << j << " " << finalPointIndex << "    " << vertex2pointAttr[0].first->get<math::Vec2f>(vertexIndex).x << "  " << vertex2pointAttr[0].first->get<math::Vec2f>(vertexIndex).y << std::endl;
-					//std::cout << i << ":" << j << " " << finalPointIndex << "    " << vertex2pointAttr[0].second->get<math::Vec2f>(finalPointIndex).x << "  " << vertex2pointAttr[0].second->get<math::Vec2f>(finalPointIndex).y << std::endl;
-
 					//if( vertex2pointAttr[0].first->get<math::Vec2f>(vertexIndex).x == result->getAttr("UV")->get<math::Vec2f>(finalPointIndex).x )
 					//	result->getAttr("Cd")->set(finalPointIndex, 1.0f, 0.0f, 0.0f);
 
@@ -326,7 +318,6 @@ namespace houio
 			// houdini polys are CW - opengl defaults to CCW
 			result->reverse();
 		}
-
 		return result;
 	}
 
@@ -432,6 +423,31 @@ namespace houio
 
 
 		return HouGeoIO::xport( &out, houGeo );
+	}
+
+	bool HouGeoIO::xport( const std::string& filename, const std::vector<math::V3f>& points )
+	{
+		std::map<std::string, std::vector<math::V3f>> pattr_v3f;
+		pattr_v3f["P"] = points;
+		return xport(filename, pattr_v3f);
+	}
+
+	bool HouGeoIO::xport( const std::string& filename, const std::map<std::string, std::vector<math::V3f>>& pattr_v3f )
+	{
+		Geometry::Ptr geo = Geometry::createPointGeometry();
+
+		for( auto&it:pattr_v3f )
+		{
+			std::string name = it.first;
+			const std::vector<math::V3f>& data = it.second;
+
+			int numElements = int(data.size());
+			Attribute::Ptr attr = Attribute::createV3f(numElements);
+			memcpy(attr->getRawPointer(), &data[0], sizeof(math::V3f)*numElements);
+			geo->setAttr(name, attr);
+		}
+
+		return xport( filename, geo );
 	}
 
 
