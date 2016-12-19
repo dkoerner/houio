@@ -19,7 +19,7 @@ ADD_LIBRARY ( houio STATIC
   )
 
 # trigger cxx standard (c++11)
-target_compile_features(houio PUBLIC cxx_constexpr)
+set_property(TARGET houio PROPERTY CXX_STANDARD 11)
 
 
 # install target (the lib file) and register the target in export set ---
