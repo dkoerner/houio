@@ -442,9 +442,12 @@ namespace houio
 			const std::vector<math::V3f>& data = it.second;
 
 			int numElements = int(data.size());
-			Attribute::Ptr attr = Attribute::createV3f(numElements);
-			memcpy(attr->getRawPointer(), &data[0], sizeof(math::V3f)*numElements);
-			geo->setAttr(name, attr);
+			if (numElements > 0)
+			{
+				Attribute::Ptr attr = Attribute::createV3f(numElements);
+				memcpy(attr->getRawPointer(), &data[0], sizeof(math::V3f)*numElements);
+				geo->setAttr(name, attr);
+			}
 		}
 
 		return xport( filename, geo );

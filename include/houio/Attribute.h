@@ -82,6 +82,8 @@ namespace houio
 
 		void *getRawPointer()
 		{
+			if (m_data.empty())
+				return 0;
 			return (void *)&m_data[0];
 		}
 		void *getRawPointer( int index )
