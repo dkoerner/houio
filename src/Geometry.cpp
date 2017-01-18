@@ -473,8 +473,8 @@ namespace houio
 		}
 		return result;
 	}
-/*
-	Geometry::Ptr geo_cube( const math::BoundingBox3f &bound, Geometry::PrimitiveType primType )
+
+	Geometry::Ptr Geometry::createBox(const math::BoundingBox3f &bound, Geometry::PrimitiveType primType)
 	{
 		Geometry::Ptr result = Geometry::Ptr(new Geometry(primType));
 
@@ -492,8 +492,6 @@ namespace houio
 
 		if( primType == Geometry::QUAD )
 		{
-
-
 			// quads
 			std::vector< std::tuple<int, int, int, int> > quads;
 			quads.push_back( std::make_tuple(3, 2, 1, 0) );
@@ -504,9 +502,8 @@ namespace houio
 			quads.push_back( std::make_tuple(4, 7, 3, 0) );
 
 			// split per face (because we have uv shells)
-			Attribute::Ptr positions = Attribute::createVec3f();
-			Attribute::Ptr uv = Attribute::createVec2f();
-
+			Attribute::Ptr positions = Attribute::createV3f();
+			Attribute::Ptr uv = Attribute::createV2f();
 
 			for( std::vector< std::tuple<int, int, int, int> >::iterator it = quads.begin(); it != quads.end(); ++it )
 			{
@@ -531,7 +528,7 @@ namespace houio
 		if( primType == Geometry::LINE )
 		{
 			// points
-			Attribute::Ptr positions = Attribute::createVec3f();
+			Attribute::Ptr positions = Attribute::createV3f();
 			for( std::vector<math::Vec3f>::iterator it = pos.begin(), end=pos.end(); it != end; ++it)
 				positions->appendElement( *it );
 			result->setAttr( "P", positions);
@@ -554,7 +551,7 @@ namespace houio
 
 		return result;
 	}
-
+	/*
 	//TODO: add uv mapping
 	Geometry::Ptr geo_sphere( int uSubdivisions, int vSubdivisions, float radius, math::Vec3f center, Geometry::PrimitiveType primType )
 	{
