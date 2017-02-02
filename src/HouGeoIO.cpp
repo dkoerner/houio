@@ -692,16 +692,26 @@ namespace houio
 	// TODO: datatype is int ~~~~
 	bool HouGeoIO::exportTopology( HouGeoAdapter::Topology::Ptr topo )
 	{
-		std::vector<int> indices;
+		std::vector<sint32> indices;
 		topo->getIndices(indices);
-		std::vector<sint16> indicesInt16;
-		for( int i=0;i<indices.size();++i )
-			indicesInt16.push_back(sint16(indices[i]));
+		
+		// determine the type we use for the index array, either 16 or 32 bit integers
+		bool index_exceeds_16bit = false;
+		for( auto& i : indices )
+			if( i > std::numeric_limits<sint16>::max() )
+			{
+				index_exceeds_16bit = true;
+				break;
+			}
 
 		g_writer->jsonString( "pointref" );
 		g_writer->jsonBeginArray();
 			g_writer->jsonString( "indices" );
-			g_writer->jsonUniformArray<sint16>(indicesInt16);
+			if(index_exceeds_16bit)
+				g_writer->jsonUniformArray<sint32>(indices);
+			else
+				g_writer->jsonUniformArray<sint16>(std::vector<sint16>(indices.begin(), indices.end()));
+			
 		g_writer->jsonEndArray();
 
 		return true;
