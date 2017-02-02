@@ -602,6 +602,59 @@ namespace houio
 
 		return result;
 	}
+
+	Geometry::Ptr Geometry::createLine(const math::V3f &p0, const math::V3f &p1)
+	{
+		Geometry::Ptr geo = Geometry::createLineGeometry();
+		Attribute::Ptr pattr = geo->getAttr("P");
+		int i0 = pattr->appendElement<math::V3f>( p0 );
+		int i1 = pattr->appendElement<math::V3f>( p1 );
+		geo->addLine(i0, i1);
+		return geo;
+	}
+
+	Geometry::Ptr Geometry::merge(const std::vector<Geometry::Ptr>& geo_list)
+	{
+		if( geo_list.empty() )
+			return Geometry::Ptr();
+
+		
+		Geometry::Ptr ref = geo_list[0];
+		Geometry::Ptr result = std::make_shared<Geometry>( ref->primitiveType() );
+
+
+		std::vector<std::string> attr_names;
+		ref->getAttrNames(attr_names);
+
+		for( auto& attr_name : attr_names )
+		{
+			Attribute::Ptr ref_attr = ref->getAttr(attr_name);
+			Attribute::Ptr new_attr = std::make_shared<Attribute>( ref_attr->numComponents(), ref_attr->elementComponentType() );
+			result->setAttr(attr_name, new_attr);
+		}
+
+		for( auto& geo:geo_list )
+		{
+			int last_index = result->getAttr("P")->numElements();
+
+			// merge attributes
+			for( auto& attr_name:attr_names )
+			{
+				Attribute::Ptr src = geo->getAttr(attr_name);
+				Attribute::Ptr dst = result->getAttr(attr_name);
+
+				dst->m_data.insert(dst->m_data.end(), src->m_data.begin(), src->m_data.end());
+				dst->m_numElements += src->m_numElements;
+			}
+			// merge indices
+			for( auto& index : geo->m_indexBuffer )
+				result->m_indexBuffer.push_back( index+last_index );
+			result->m_numPrimitives += geo->m_numPrimitives;
+		}
+
+		return result;
+	}
+
 	/*
 	//TODO: add uv mapping
 	Geometry::Ptr geo_sphere( int uSubdivisions, int vSubdivisions, float radius, math::Vec3f center, Geometry::PrimitiveType primType )
