@@ -393,6 +393,57 @@ namespace houio
 		return result;
 	}
 
+	Geometry::Ptr Geometry::createGrid(int xres, int yres, int zres, Geometry::PrimitiveType primType )
+	{
+		Geometry::Ptr result = std::make_shared<Geometry>(primType);
+
+		Attribute::Ptr positions = Attribute::createV3f();
+		result->setAttr("P", positions);
+
+		for (int k = 0; k<zres; ++k)
+			for (int j = 0; j<yres; ++j)
+				for (int i = 0; i<xres; ++i)
+				{
+					float u = i / (float)(xres - 1);
+					float v = j / (float)(yres - 1);
+					float w = k / (float)(zres - 1);
+					positions->appendElement(math::V3f(u - 0.5f, v - 0.5f, w-0.5));
+				}
+
+		if (primType == Geometry::POINT)
+		{
+			int numPoints = xres*yres*zres;
+			for (int i = 0; i<numPoints; ++i)
+				result->addPoint(i);
+		}else
+		if (primType == Geometry::LINE)
+		{
+			for (int k = 0; k<zres; ++k)
+				for (int j = 0; j<yres; ++j)
+					for (int i = 0; i<xres; ++i)
+					{
+						int index_p = k*xres*yres + j*xres + i;
+						int index_p_xp = k*xres*yres + j*xres + (i+1);
+						int index_p_yp = k*xres*yres + (j+1)*xres + i;
+						int index_p_zp = (k+1)*xres*yres + j*xres + i;
+
+						if(i<xres-1)
+							result->addLine(index_p, index_p_xp);
+						if(j<zres-1)
+							result->addLine(index_p, index_p_yp);
+						if(k<zres-1)
+							result->addLine(index_p, index_p_zp);
+					}
+		}else
+		if (primType == Geometry::TRIANGLE)
+		{
+			//TODO
+		}
+
+
+		return result;
+	}
+
 	Geometry::Ptr Geometry::createSphere( int uSubdivisions, int vSubdivisions, float radius, math::Vec3f center, Geometry::PrimitiveType primType )
 	{
 		Geometry::Ptr result = std::make_shared<Geometry>(primType);

@@ -99,6 +99,7 @@ namespace houio
 
 		static Ptr                                                  createQuad(Geometry::PrimitiveType primType = Geometry::TRIANGLE);
 		static Ptr                                                  createGrid( int xres, int zres, Geometry::PrimitiveType primType = Geometry::TRIANGLE );
+		static Ptr                                                  createGrid( int xres, int yres, int zres, Geometry::PrimitiveType primType = Geometry::TRIANGLE);
 		static Ptr                                                  createSphere( int uSubdivisions, int vSubdivisions, float radius, math::Vec3f center = math::V3f(0.0f), Geometry::PrimitiveType primType = Geometry::TRIANGLE );
 		static Ptr                                                  createBox(const math::BoundingBox3f &bound, Geometry::PrimitiveType primType = Geometry::TRIANGLE);
 	};
