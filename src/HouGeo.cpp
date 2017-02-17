@@ -955,6 +955,11 @@ namespace houio
 		return &m_vertices[m_perPolyVertexListOffset[poly]];
 	}
 
+	bool HouGeo::HouPoly::closed()const
+	{
+		return m_closed;
+	}
+
 
 
 	// MISC =======================================================

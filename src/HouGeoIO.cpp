@@ -417,6 +417,10 @@ namespace houio
 				for( int i=0,count=geo->m_indexBuffer.size();i<count;++i )
 					poly->m_vertices[i] = i;
 
+				poly->m_closed = false;
+				if(geo->primitiveType() != Geometry::LINE)
+					poly->m_closed = true;
+
 				houGeo->addPrimitive(poly);
 			}
 		}
@@ -901,7 +905,7 @@ namespace houio
 					g_writer->jsonString("uniformfields");
 					g_writer->jsonBeginMap();
 						g_writer->jsonKey("closed");
-						g_writer->jsonBool(false);
+						g_writer->jsonBool(poly->closed());
 					g_writer->jsonEndMap();
 				g_writer->jsonEndArray();
 

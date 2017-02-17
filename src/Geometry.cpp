@@ -400,38 +400,42 @@ namespace houio
 		Attribute::Ptr positions = Attribute::createV3f();
 		result->setAttr("P", positions);
 
-		for (int k = 0; k<zres; ++k)
-			for (int j = 0; j<yres; ++j)
-				for (int i = 0; i<xres; ++i)
+		int numPointsX = xres+1;
+		int numPointsY = yres+1;
+		int numPointsZ = zres+1;
+
+		for (int k = 0; k<zres+1; ++k)
+			for (int j = 0; j<numPointsY; ++j)
+				for (int i = 0; i<numPointsX; ++i)
 				{
-					float u = i / (float)(xres - 1);
-					float v = j / (float)(yres - 1);
-					float w = k / (float)(zres - 1);
+					float u = i / (float)(numPointsX-1);
+					float v = j / (float)(numPointsY-1);
+					float w = k / (float)(zres);
 					positions->appendElement(math::V3f(u - 0.5f, v - 0.5f, w-0.5));
 				}
 
 		if (primType == Geometry::POINT)
 		{
-			int numPoints = xres*yres*zres;
+			int numPoints = numPointsX*numPointsY*(zres+1);
 			for (int i = 0; i<numPoints; ++i)
 				result->addPoint(i);
 		}else
 		if (primType == Geometry::LINE)
 		{
-			for (int k = 0; k<zres; ++k)
-				for (int j = 0; j<yres; ++j)
-					for (int i = 0; i<xres; ++i)
+			for (int k = 0; k<zres+1; ++k)
+				for (int j = 0; j<numPointsY; ++j)
+					for (int i = 0; i<numPointsX; ++i)
 					{
-						int index_p = k*xres*yres + j*xres + i;
-						int index_p_xp = k*xres*yres + j*xres + (i+1);
-						int index_p_yp = k*xres*yres + (j+1)*xres + i;
-						int index_p_zp = (k+1)*xres*yres + j*xres + i;
+						int index_p = k*numPointsX*numPointsY + j*numPointsX + i;
+						int index_p_xp = k*numPointsX*numPointsY + j*numPointsX + (i+1);
+						int index_p_yp = k*numPointsX*numPointsY + (j+1)*numPointsX + i;
+						int index_p_zp = (k+1)*numPointsX*numPointsY + j*numPointsX + i;
 
-						if(i<xres-1)
+						if(i<numPointsX-1)
 							result->addLine(index_p, index_p_xp);
-						if(j<zres-1)
+						if(j<numPointsY-1)
 							result->addLine(index_p, index_p_yp);
-						if(k<zres-1)
+						if(k<numPointsZ-1)
 							result->addLine(index_p, index_p_zp);
 					}
 		}else
@@ -451,8 +455,8 @@ namespace houio
 		Attribute::Ptr positions = Attribute::createV3f();
 		result->setAttr( "P", positions);
 
-		Attribute::Ptr uvs = Attribute::createV2f();
-		result->setAttr( "UV", uvs );
+		//Attribute::Ptr uvs = Attribute::createV2f();
+		//result->setAttr( "UV", uvs );
 
 		float dPhi = MATH_2PIf/uSubdivisions;
 		float dTheta = MATH_PIf/vSubdivisions;

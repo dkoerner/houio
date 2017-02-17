@@ -81,10 +81,12 @@ namespace houio
 			virtual int                                       numPolys()const override;
 			virtual int                                       numVertices( int poly )const override;
 			virtual int const*                                vertices(int poly=0)const override;
+			virtual bool                                      closed()const override;
 			int                                               m_numPolys;
 			std::vector<int>                                  m_perPolyVertexCount; // holds number of vertices for each polygon
 			std::vector<int>                                  m_perPolyVertexListOffset; // holds offset into m_vertices per poly
 			std::vector<int>                                  m_vertices; // vertex indicess for each vertex
+			bool                                              m_closed;
 		};
 
 

@@ -106,6 +106,7 @@ namespace houio
 			virtual int                        numVertices( int poly )const;
 			virtual int const*                 vertices(int poly=0)const;
 			virtual int numPrimitives()const override{return numPolys();}
+			virtual bool closed()const;
 		};
 
 

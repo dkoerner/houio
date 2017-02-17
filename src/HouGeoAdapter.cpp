@@ -135,6 +135,10 @@ namespace houio
 		return 0;
 	}
 
+	bool HouGeoAdapter::PolyPrimitive::closed()const
+	{
+		return false;
+	}
 
 
 
