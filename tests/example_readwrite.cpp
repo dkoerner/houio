@@ -10,16 +10,16 @@
 // This is why in some places functions are commented out which do not exist in this example. These comments
 // just give you a hint where you need to extend this example to make it practical.
 
-#include <hougeo/json.h>
+#include <houio/json.h>
 
 #include <iostream>
 #include <fstream>
 
 
 // utility function: turns json array into jsonObject (every first entry is key, every second is value)
-hougeo::json::ObjectPtr toObject( hougeo::json::ArrayPtr a )
+houio::json::ObjectPtr toObject( houio::json::ArrayPtr a )
 {
-	hougeo::json::ObjectPtr o = hougeo::json::Object::create();
+	houio::json::ObjectPtr o = houio::json::Object::create();
 
 	int numElements = (int)a->size();
 	for( int i=0;i<numElements;i+=2 )
@@ -27,7 +27,7 @@ hougeo::json::ObjectPtr toObject( hougeo::json::ArrayPtr a )
 		if( a->getValue(i).isString() )
 		{
 			std::string key = a->get<std::string>(i);
-			hougeo::json::Value value = a->getValue(i+1);
+			houio::json::Value value = a->getValue(i+1);
 			o->append( key, value );
 		}
 	}
@@ -37,8 +37,8 @@ hougeo::json::ObjectPtr toObject( hougeo::json::ArrayPtr a )
 
 void import( std::istream *in )
 {
-		hougeo::json::JSONReader reader;
-		hougeo::json::Parser p;
+		houio::json::JSONReader reader;
+		houio::json::Parser p;
 			
 		if(!p.parse( in, &reader ))
 			throw std::runtime_error("parse failed");
@@ -49,21 +49,21 @@ void import( std::istream *in )
 		// For houdini files, the root json object is an array.
 		// The reason for that is that the order of items needs
 		// to be contained which does not happen for json objects.
-		hougeo::json::ArrayPtr root = reader.getRoot().asArray();
+		houio::json::ArrayPtr root = reader.getRoot().asArray();
 
 		// the houdini root array is a flattened json object
 		// in order to work with it more conveniently (e.g. be able
 		// to query keys for existance etc.), we unflatten the array
 		// into an object again
-		hougeo::json::ObjectPtr o = toObject( root );
+		houio::json::ObjectPtr o = toObject( root );
 
 			
 		// now we can start to query the json data for its content. This requires
 		// to know the schema of the layout which unfortunately is not documented.
 		// The logger can be used to learn the schema from any given file.
-		hougeo::sint64 numVertices = 0;
-		hougeo::sint64 numPoints = 0;
-		hougeo::sint64 numPrimitives = 0;
+		houio::sint64 numVertices = 0;
+		houio::sint64 numPoints = 0;
+		houio::sint64 numPrimitives = 0;
 		if( o->hasKey("pointcount") )
 			numPoints = o->get<int>("pointcount", 0);
 		if( o->hasKey("vertexcount") )
@@ -78,47 +78,47 @@ void import( std::istream *in )
 
 		if( o->hasKey("attributes") )
 		{
-			hougeo::json::ObjectPtr attributes = toObject(o->getArray("attributes"));
+			houio::json::ObjectPtr attributes = toObject(o->getArray("attributes"));
 			if( attributes->hasKey("pointattributes") )
 			{
-				hougeo::json::ArrayPtr pointAttributes = attributes->getArray("pointattributes");
-				hougeo::sint64 numPointAttributes = pointAttributes->size();
+				houio::json::ArrayPtr pointAttributes = attributes->getArray("pointattributes");
+				houio::sint64 numPointAttributes = pointAttributes->size();
 				for(int i=0;i<numPointAttributes;++i)
 				{
-					hougeo::json::ArrayPtr pointAttribute = pointAttributes->getArray(i);
+					houio::json::ArrayPtr pointAttribute = pointAttributes->getArray(i);
 					// here we pass loading the attribute from the json object to a seperate function
 					//loadAttribute( pointAttribute, numPoints );
 				}
 			}
 			if( attributes->hasKey("vertexattributes") )
 			{
-				hougeo::json::ArrayPtr vertexAttributes = attributes->getArray("vertexattributes");
-				hougeo::sint64 numVertexAttributes = vertexAttributes->size();
+				houio::json::ArrayPtr vertexAttributes = attributes->getArray("vertexattributes");
+				houio::sint64 numVertexAttributes = vertexAttributes->size();
 				for(int i=0;i<numVertexAttributes;++i)
 				{
-					hougeo::json::ArrayPtr vertexAttribute = vertexAttributes->getArray(i);
+					houio::json::ArrayPtr vertexAttribute = vertexAttributes->getArray(i);
 					// here we pass loading the attribute from the json object to a seperate function
 					//loadAttribute( pointAttribute, numPoints );
 				}
 			}
 			if( attributes->hasKey("primitiveattributes") )
 			{
-				hougeo::json::ArrayPtr primitiveAttributes = attributes->getArray("primitiveattributes");
-				hougeo::sint64 numPrimitiveAttributes = primitiveAttributes->size();
+				houio::json::ArrayPtr primitiveAttributes = attributes->getArray("primitiveattributes");
+				houio::sint64 numPrimitiveAttributes = primitiveAttributes->size();
 				for(int i=0;i<numPrimitiveAttributes;++i)
 				{
-					hougeo::json::ArrayPtr primitiveAttribute = primitiveAttributes->getArray(i);
+					houio::json::ArrayPtr primitiveAttribute = primitiveAttributes->getArray(i);
 					// here we pass loading the attribute from the json object to a seperate function
 					//loadAttribute( pointAttribute, numPoints );
 				}
 			}
 			if( attributes->hasKey("globalattributes") )
 			{
-				hougeo::json::ArrayPtr globalAttributes = attributes->getArray("globalattributes");
-				hougeo::sint64 numGlobalAttributes = globalAttributes->size();
+				houio::json::ArrayPtr globalAttributes = attributes->getArray("globalattributes");
+				houio::sint64 numGlobalAttributes = globalAttributes->size();
 				for(int i=0;i<numGlobalAttributes;++i)
 				{
-					hougeo::json::ArrayPtr globalAttribute = globalAttributes->getArray(i);
+					houio::json::ArrayPtr globalAttribute = globalAttributes->getArray(i);
 					// here we pass loading the attribute from the json object to a seperate function
 					//loadAttribute( pointAttribute, numPoints );
 				}
@@ -130,11 +130,11 @@ void import( std::istream *in )
 		}
 		if( o->hasKey("primitives") )
 		{
-			hougeo::json::ArrayPtr primitives = o->getArray("primitives");
+			houio::json::ArrayPtr primitives = o->getArray("primitives");
 			int numPrimitives = (int)primitives->size();
 			for( int j=0;j<numPrimitives;++j )
 			{
-				hougeo::json::ArrayPtr primitive = primitives->getArray(j);
+				houio::json::ArrayPtr primitive = primitives->getArray(j);
 				//loadPrimitive( primitive );
 			}
 		}
@@ -157,11 +157,11 @@ bool xport( std::ostream *out, Geometry* geo, bool binary )
 {
 	// we first instatiate a writer depending on wether we
 	// want geo (ascii) or bgeo (binary) houdini files
-	hougeo::json::Writer* writer=0;
+	houio::json::Writer* writer=0;
 	if( binary )
-		writer = new hougeo::json::BinaryWriter( out );
+		writer = new houio::json::BinaryWriter( out );
 	else
-		writer = new hougeo::json::ASCIIWriter( out );
+		writer = new houio::json::ASCIIWriter( out );
 
 	// we now can write our data using the json events provided
 	// by the writer. For this we need to know the schema/layout
