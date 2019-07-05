@@ -191,12 +191,12 @@ namespace houio
 	}
 
 	HouGeo::HouAttribute::HouAttribute( const std::string &name, Attribute::Ptr attr ) : AttributeAdapter(),
-		m_attr(attr),
 		m_name(name),
-		m_type(HouGeoAdapter::AttributeAdapter::ATTR_TYPE_NUMERIC),
-		m_storage(ATTR_STORAGE_FPREAL32),
 		tupleSize(attr->numComponents()),
-		numElements(attr->numElements())
+		m_storage(ATTR_STORAGE_FPREAL32),
+		m_type(HouGeoAdapter::AttributeAdapter::ATTR_TYPE_NUMERIC),
+		numElements(attr->numElements()),
+		m_attr(attr)
 	{
 		switch( m_attr->elementComponentType() )
 		{
@@ -696,6 +696,10 @@ namespace houio
 						//p = *(math::V3d *)&m_pointAttributes.find("P")->second->data[ v*pAttr->tupleSize*sizeof(double) ];
 						p = m_pointAttributes.find("P")->second->m_attr->get<math::V3d>( v );
 					}break;
+				case AttributeAdapter::ATTR_STORAGE_INVALID:
+				case AttributeAdapter::ATTR_STORAGE_INT32:
+				default:
+					break;
 				}
 			}
 			math::Matrix44d houLocalToWorldTranslation = math::Matrix44d::TranslationMatrix(p);

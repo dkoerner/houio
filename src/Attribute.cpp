@@ -9,10 +9,10 @@
 namespace houio
 {
 	Attribute::Attribute( char numComponents, ComponentType componentType ) :
-		m_numElements(0),
+		m_componentType(componentType),
 		m_numComponents(numComponents),
-		m_isDirty(true),
-		m_componentType(componentType)
+		m_numElements(0),
+		m_isDirty(true)
 	{
 		switch(componentType)
 		{
