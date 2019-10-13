@@ -257,6 +257,7 @@ namespace houio
 			{
 				int point = vertex_ptr[i];
 				if( !pointsToSplit[point] )
+				{
 					if( firstVertex[point] >=0 )
 					{
 						// compare
@@ -269,6 +270,7 @@ namespace houio
 							}
 					}else
 						firstVertex[point] = i;
+				}
 			}
 
 			int vertexIndex = 0;
@@ -379,7 +381,7 @@ namespace houio
 
 			size_t numIndices = geo->m_indexBuffer.size();
 			top->indexBuffer.resize(numIndices);
-			for( int i=0;i<numIndices;++i )
+			for( size_t i=0;i<numIndices;++i )
 				top->indexBuffer[i] = geo->m_indexBuffer[i];
 
 			houGeo->setTopology(top);

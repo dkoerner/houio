@@ -663,7 +663,7 @@ namespace houio
 			t_dest &dest;
 			VariantConverter( t_dest &_dest ) : dest(_dest){}
 
-			void operator()(std::string x)
+			void operator()(std::string /*x*/)
 			{
 				dest = false;
 			}
@@ -682,7 +682,7 @@ namespace houio
 			t_dest &dest;
 			VariantConverter( t_dest &_dest ) : dest(_dest){}
 
-			void operator()(std::string x)
+			void operator()(std::string /*x*/)
 			{
 				//dest = false;
 			}
@@ -701,7 +701,7 @@ namespace houio
 			t_dest &dest;
 			VariantConverter( t_dest &_dest ) : dest(_dest){}
 
-			void operator()(std::string x)
+			void operator()(std::string /*x*/)
 			{
 				//dest = false;
 			}
@@ -720,7 +720,7 @@ namespace houio
 			t_dest &dest;
 			VariantConverter( t_dest &_dest ) : dest(_dest){}
 
-			void operator()(std::string x)
+			void operator()(std::string /*x*/)
 			{
 				//dest = false;
 			}
@@ -757,7 +757,7 @@ namespace houio
 		template<typename T>
 		const T Value::as()const
 		{
-			T dest;
+			T dest = T();
 			VariantConverter<T> conv(dest);
 			ttl::var::apply_visitor(conv, m_value);
 			return dest;

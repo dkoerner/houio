@@ -13,8 +13,8 @@ namespace houio
 {
 	Geometry::Geometry( PrimitiveType pt ) :
 		m_primitiveType(pt),
-		m_numPrimitives(0),
-		m_indexBufferIsDirty(true)
+		m_indexBufferIsDirty(true),
+		m_numPrimitives(0)
 	{
 		switch( pt )
 		{
@@ -493,7 +493,6 @@ namespace houio
 		}else
 		if( primType == Geometry::LINE )
 		{
-			int numVertices = positions->numElements();
 			for( int j=0; j<vSubdivisions-3;++j )
 			{
 				int offset = j*(uSubdivisions);
