@@ -445,8 +445,6 @@ namespace math
 
 	void evalCatmullRom( const float *keyPos, const float *keyT, int num, int dim, float t, float *v )
 	{
-		const int size = dim + 1;
-
 		if( t<0.0f )t=0.0f;
 		if( t>1.0f )t=1.0f;
 
@@ -477,8 +475,6 @@ namespace math
 
 	void evalLinear( const float *keyPos, const float *keyT, int num, int dim, float t, float *v )
 	{
-		const int size = dim + 1;
-
 		if( t<0.0f )t=0.0f;
 		if( t>1.0f )t=1.0f;
 

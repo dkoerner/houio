@@ -6,7 +6,7 @@
 // differs in some places between the ascii and the binary version of the format. 
 // 
 // NOTE: the code just gives you an idea how you would import and export houdini geometry, it is not complete
-// as the hougeo library has no geometry representation. This is something which is left to the client code.
+// as the houio library has no geometry representation. This is something which is left to the client code.
 // This is why in some places functions are commented out which do not exist in this example. These comments
 // just give you a hint where you need to extend this example to make it practical.
 

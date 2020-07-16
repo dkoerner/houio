@@ -52,5 +52,6 @@ install( FILES cmake/houio-config.cmake "${CMAKE_CURRENT_BINARY_DIR}/houio/houio
 # create final package config file (by copying from source-tree)
 #configure_file(cmake/houio-config.cmake "${CMAKE_CURRENT_BINARY_DIR}/houio/houio-config.cmake" COPYONLY )
 
-
+# tests -----------
+add_subdirectory( tests )
 

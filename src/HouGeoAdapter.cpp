@@ -92,7 +92,7 @@ namespace houio
 		case ATTR_STORAGE_FPREAL32:return sizeof(float);break;
 		case ATTR_STORAGE_FPREAL64:return sizeof(double);break;
 		case ATTR_STORAGE_INT32:return sizeof(int);break;
-		default: 0;break;
+		default:break;
 		};
 		return 0;
 	}

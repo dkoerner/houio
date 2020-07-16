@@ -191,12 +191,12 @@ namespace houio
 	}
 
 	HouGeo::HouAttribute::HouAttribute( const std::string &name, Attribute::Ptr attr ) : AttributeAdapter(),
-		m_attr(attr),
 		m_name(name),
-		m_type(HouGeoAdapter::AttributeAdapter::ATTR_TYPE_NUMERIC),
-		m_storage(ATTR_STORAGE_FPREAL32),
 		tupleSize(attr->numComponents()),
-		numElements(attr->numElements())
+		m_storage(ATTR_STORAGE_FPREAL32),
+		m_type(HouGeoAdapter::AttributeAdapter::ATTR_TYPE_NUMERIC),
+		numElements(attr->numElements()),
+		m_attr(attr)
 	{
 		switch( m_attr->elementComponentType() )
 		{
@@ -439,7 +439,7 @@ namespace houio
 
 			int attrComponentSize = AttributeAdapter::storageSize( attrStorage );
 			int dstTupleSize = attrTupleSize;
-			int dstComponentSize = attrComponentSize;
+			size_t dstComponentSize = attrComponentSize;
 			//attr->data.resize( elementCount*dstTupleSize*dstComponentSize );
 
 			if( attrData->hasKey("values") )
@@ -510,7 +510,7 @@ namespace houio
 					while( elementsRemaining>0 )
 					{
 						int pageStartElement = pageIndex*elementsPerPage;
-						int numElements = std::min( elementsRemaining, elementsPerPage );
+						size_t numElements = std::min( elementsRemaining, elementsPerPage );
 
 						// process each pack
 						int packIndex = 0;
@@ -518,7 +518,7 @@ namespace houio
 						for( std::vector<ubyte>::iterator it = attrPacking.begin(); it != attrPacking.end();++it, ++packIndex )
 						{
 							ubyte pack = *it;
-							int maxPack = std::min( (int)pack, std::max(0, dstTupleSize-startComponentIndex) );
+							size_t maxPack = std::min( (int)pack, std::max(0, dstTupleSize-startComponentIndex) );
 
 							if( maxPack == 0 )
 								break;
@@ -530,10 +530,10 @@ namespace houio
 
 							// if pack is constant only the first element is given, this is the reference
 							// find element index where the new page starts
-							int elementIndex = pageStartIndex;
+							size_t elementIndex = pageStartIndex;
 
 							// now iterate over all elements of current page and get values from current pack
-							for( int i=0;i<numElements;++i )
+							for( size_t i=0;i<numElements;++i )
 							{
 								// we update elementIndex only if pack is varying within current page
 								// otherwise we will just keep pointing to the reference element
@@ -548,10 +548,10 @@ namespace houio
 									//qDebug() << "pack " << pack;
 
 								// get global element index for writing into our dense array
-								int destElementIndex = (pageStartElement+i)*dstTupleSize;
+								size_t destElementIndex = (pageStartElement+i)*dstTupleSize;
 
 								// for each component of current pack
-								for( int component=0;component<maxPack;++component )
+								for( size_t component=0;component<maxPack;++component )
 									// get component value from current rawpagedata
 									// and copy that component to the location of that component in dense array
 									// TODO: uniform arrays!
@@ -696,6 +696,10 @@ namespace houio
 						//p = *(math::V3d *)&m_pointAttributes.find("P")->second->data[ v*pAttr->tupleSize*sizeof(double) ];
 						p = m_pointAttributes.find("P")->second->m_attr->get<math::V3d>( v );
 					}break;
+				case AttributeAdapter::ATTR_STORAGE_INVALID:
+				case AttributeAdapter::ATTR_STORAGE_INT32:
+				default:
+					break;
 				}
 			}
 			math::Matrix44d houLocalToWorldTranslation = math::Matrix44d::TranslationMatrix(p);

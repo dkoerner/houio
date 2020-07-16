@@ -55,7 +55,7 @@ namespace houio
 			m_isDirty = true;
 		}
 
-		void resize( int numElements )
+		void resize( size_t numElements )
 		{
 			m_data.resize( numElements*numComponents()*elementComponentSize() );
 			m_numElements = numElements;
@@ -100,7 +100,7 @@ namespace houio
 		char              m_componentSize; // size in memory of a component of an element in byte
 		ComponentType     m_componentType;
 		char              m_numComponents; // number of components per element
-		int                 m_numElements;
+		size_t              m_numElements;
 
 		//
 		// static creators
