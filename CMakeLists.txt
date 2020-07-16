@@ -21,6 +21,7 @@ ADD_LIBRARY ( houio STATIC
 # trigger cxx standard (c++11)
 set_property(TARGET houio PROPERTY CXX_STANDARD 11)
 
+add_subdirectory ( tests )
 
 # install target (the lib file) and register the target in export set ---
 install( TARGETS houio DESTINATION lib EXPORT houio-targets )
