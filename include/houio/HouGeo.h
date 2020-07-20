@@ -34,6 +34,13 @@ namespace houio
 			virtual void                          getPacking( std::vector<int> &packing )const;
 			virtual int                           getNumElements()const;
 			virtual std::string                   getString( int index )const;
+			virtual std::string                   getUniqueString( int index )const;
+			virtual int                           getStringIndex( int index )const;
+			virtual std::vector<std::string>      getUniqueStrings()const;
+			virtual std::vector<int>              getStringIndices()const;
+
+
+
 			virtual RawPointer::Ptr               getRawPointer();
 
 			//int                                   addV4f(math::V4f value);
