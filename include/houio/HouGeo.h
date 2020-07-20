@@ -44,8 +44,9 @@ namespace houio
 			Storage                               m_storage;
 			Type                                  m_type;
 			//std::vector<char>                     data;
-			std::vector<std::string>              strings; // used in case of type==string
-			int                                   numElements;
+			std::vector<std::string>            strings; 		// used in case of type==string
+			std::vector<int>                    stringsIdxs;    // used in case of type==string
+			int                                 numElements;
 
 			Attribute::Ptr                        m_attr; // primitives::Attribute
 		};

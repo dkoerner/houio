@@ -280,12 +280,17 @@ namespace houio
 		m_type = ATTR_TYPE_STRING;
 		//attr->storage = attrStorage;
 		tupleSize = 1;
+
+		// TODO : handle indices
 		return numElements++;
 	}
 
 	std::string HouGeo::HouAttribute::getString( int index )const
 	{
-		return strings[index];
+		if(stringsIdxs.size() < index)
+			throw std::runtime_error("HouGeo::getString Index is out of stringsIdx range.");
+		int string_index = stringsIdxs[index];
+		return strings[string_index];
 	}
 
 
@@ -583,6 +588,10 @@ namespace houio
 		}else
 		if( attrType == AttributeAdapter::ATTR_TYPE_STRING )
 		{
+			attr->m_name = attrName;
+			attr->m_type = attrType;
+			attr->tupleSize = 1;
+
 			if( attrData->hasKey("strings") )
 			{
 				json::ArrayPtr stringsArray = attrData->getArray("strings");
@@ -591,14 +600,21 @@ namespace houio
 				{
 					std::string string = stringsArray->get<std::string>( i );
 					attr->strings.push_back(string);
-					//qDebug() << QString::fromStdString(string);
 				}
 				attr->numElements = numElements;
+			}
 
-				attr->m_name = attrName;
-				attr->m_type = attrType;
-				//attr->storage = attrStorage;
-				attr->tupleSize = 1;
+			if( attrData->hasKey("indices") )
+			{
+				json::ObjectPtr indicesObject = toObject(attrData->getArray("indices"));
+				json::ArrayPtr indices = indicesObject->getArray("rawpagedata");
+				int numElements = indices->size();
+				for( int i=0;i<numElements;++i )
+				{
+					int index = indices->get<int>(i);
+					attr->stringsIdxs.push_back(index);
+				}
+				attr->numElements = numElements;
 			}
 		}
 
@@ -886,7 +902,7 @@ namespace houio
 	{
 		return field->sample(i, j, k);
 	}
-	
+
 	math::Vec3i HouGeo::HouVolume::getResolution()const
 	{
 		return field->getResolution();
@@ -994,7 +1010,7 @@ namespace houio
 
 
 
-	
+
 
 
 
