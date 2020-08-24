@@ -34,6 +34,13 @@ namespace houio
 			virtual void                          getPacking( std::vector<int> &packing )const;
 			virtual int                           getNumElements()const;
 			virtual std::string                   getString( int index )const;
+			virtual std::string                   getUniqueString( int index )const;
+			virtual int                           getStringIndex( int index )const;
+			virtual std::vector<std::string>      getUniqueStrings()const;
+			virtual std::vector<int>              getStringIndices()const;
+
+
+
 			virtual RawPointer::Ptr               getRawPointer();
 
 			//int                                   addV4f(math::V4f value);
@@ -44,8 +51,9 @@ namespace houio
 			Storage                               m_storage;
 			Type                                  m_type;
 			//std::vector<char>                     data;
-			std::vector<std::string>              strings; // used in case of type==string
-			int                                   numElements;
+			std::vector<std::string>            strings; 		// used in case of type==string
+			std::vector<int>                    stringsIdxs;    // used in case of type==string
+			int                                 numElements;
 
 			Attribute::Ptr                        m_attr; // primitives::Attribute
 		};

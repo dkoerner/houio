@@ -57,6 +57,10 @@ namespace houio
 			virtual int                      getNumElements()const;
 			virtual RawPointer::Ptr          getRawPointer();
 			virtual std::string              getString( int index )const=0;
+			virtual std::string              getUniqueString( int index )const=0;
+			virtual int                      getStringIndex( int index )const=0;
+			virtual std::vector<std::string> getUniqueStrings()const=0;
+			virtual std::vector<int>         getStringIndices()const=0;
 			static Type                      type( const std::string &typeName );
 			static Storage                   storage( const std::string &storageName );
 			static int                       storageSize( Storage storage );
